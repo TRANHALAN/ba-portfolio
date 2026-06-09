@@ -1,0 +1,28 @@
+flowchart TD
+    Start([Customer Service Opens Order]) --> ViewOrder[View Order Details]
+    ViewOrder --> ValidateStatus{Order Status<br/>is Paid?}
+    
+    ValidateStatus -->|No| ErrorStatus["❌ Display Error:<br/>Only Paid Orders<br/>Can Be Refunded"]
+    ErrorStatus --> End1([End Process])
+    
+    ValidateStatus -->|Yes| EnterRefund[Enter Refund Amount<br/>& Reason]
+    EnterRefund --> ValidateAmount{Refundable Balance<br/>Sufficient?}
+    
+    ValidateAmount -->|No| ErrorAmount["❌ Display Error:<br/>Insufficient<br/>Refundable Balance"]
+    ErrorAmount --> End2([End Process])
+    
+    ValidateAmount -->|Yes| CallGateway["Call Payment Gateway<br/>Refund API"]
+    CallGateway --> GatewayResponse{Gateway<br/>Response}
+    
+    GatewayResponse -->|Success| CreateHistory["✓ Create Refund History"]
+    CreateHistory --> UpdateBalance["Update Refundable Balance"]
+    UpdateBalance --> UpdateStatus["Update Order Status<br/>to Partially Refunded"]
+    UpdateStatus --> SendNotif["Send Customer<br/>Notification"]
+    SendNotif --> End3([End Process - Success])
+    
+    GatewayResponse -->|Failure| ErrorGateway["❌ Display Error:<br/>Refund Failed"]
+    ErrorGateway --> End4([End Process])
+    
+    GatewayResponse -->|Timeout| MarkPending["⏳ Mark Refund<br/>as Pending"]
+    MarkPending --> AdminRetry["Allow Administrator<br/>Retry Option"]
+    AdminRetry --> End5([End Process - Pending])
