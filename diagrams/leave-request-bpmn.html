@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Request Process - BPMN Diagram</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mxgraph/4.10.38/mxClient.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-subtitle {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .toolbar {
+            background-color: #ecf0f1;
+            padding: 10px 20px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-button {
+            padding: 8px 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .toolbar-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .toolbar-button.secondary {
+            background-color: #95a5a6;
+        }
+
+        .toolbar-button.secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .canvas {
+            flex: 1;
+            background-color: white;
+            border: 1px solid #ddd;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background-color: #ecf0f1;
+            border-left: 1px solid #ddd;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-transform: uppercase;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+
+        .sidebar-section {
+            margin-bottom: 20px;
+        }
+
+        .sidebar-item {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #3498db;
+            color: white;
+            transform: translateX(-5px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-item strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .sidebar-desc {
+            font-size: 11px;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+
+        .legend {
+            background-color: white;
+            border: 1px solid #bdc3c7;
+            border-radius: 4px;
+            padding: 15px;
+        }
+
+        .legend-title {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            font-size: 11px;
+        }
+
+        .legend-icon {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #2c3e50;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .legend-item:nth-child(2) .legend-icon {
+            border-radius: 4px;
+        }
+
+        .legend-item:nth-child(3) .legend-icon {
+            border-radius: 50%;
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        .legend-item:nth-child(4) .legend-icon {
+            border-radius: 0;
+            transform: rotate(45deg);
+        }
+
+        .legend-item:nth-child(5) .legend-icon {
+            width: 40px;
+            height: 20px;
+            border-radius: 20px;
+            background-color: #2c3e50;
+        }
+
+        .footer {
+            background-color: #ecf0f1;
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            font-size: 11px;
+            color: #7f8c8d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-box {
+            background-color: #d5f4e6;
+            border-left: 4px solid #27ae60;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            color: #27ae60;
+        }
+
+        #graphContainer {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+        }
+
+        .description {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .description strong {
+            color: #ff6b6b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div>
+                <div class="header-title">Leave Request Process - BPMN 2.0</div>
+                <div class="header-subtitle">Business Process Model and Notation Diagram</div>
+            </div>
+        </div>
+
+        <!-- TOOLBAR -->
+        <div class="toolbar">
+            <button class="toolbar-button" onclick="downloadDiagram()">
+                📥 Download as SVG
+            </button>
+            <button class="toolbar-button secondary" onclick="printDiagram()">
+                🖨️ Print
+            </button>
+            <button class="toolbar-button secondary" onclick="resetZoom()">
+                🔄 Reset View
+            </button>
+            <button class="toolbar-button secondary" onclick="zoomIn()">
+                🔍+ Zoom In
+            </button>
+            <button class="toolbar-button secondary" onclick="zoomOut()">
+                🔍- Zoom Out
+            </button>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- CANVAS -->
+            <div class="canvas" id="graphContainer"></div>
+
+            <!-- SIDEBAR -->
+            <div class="sidebar">
+                <div class="sidebar-title">Process Overview</div>
+                
+                <div class="description">
+                    <strong>Leave Request Flow:</strong> Complete workflow from submission to approval completion.
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-title" style="font-size: 12px; margin-top: 10px;">Process Steps</div>
+                    
+                    <div class="sidebar-item">
+                        <strong>1. Employee Submission</strong>
+                        <div class="sidebar-desc">Employee completes leave request form and submits for approval</div>
+                    </div>
+
+                    <div class="sidebar-item">
+                        <strong>2. Leader Review</strong>
+                        <div class="sidebar-desc">Team leader reviews the request and either approves or rejects</div>
+                    </div>
+
+                    <div class="sidebar-item">
+                        <strong>3. Decision Gate</strong>
+                        <div class="sidebar-desc">If rejected by leader, request ends. If approved, proceeds to HR</div>
+                    </div>
+
+                    <div class="sidebar-item">
+                        <strong>4. HR Processing</strong>
+                        <div class="sidebar-desc">HR reviews leave balance and approves or rejects the request</div>
+                    </div>
+
+                    <div class="sidebar-item">
+                        <strong>5. Notification</strong>
+                        <div class="sidebar-desc">Employee receives notification of final decision</div>
+                    </div>
+
+                    <div class="sidebar-item">
+                        <strong>6. Records Update</strong>
+                        <div class="sidebar-desc">Approved leaves are recorded in the system</div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>Key Points:</strong>
+                    ✓ Parallel decision points
+                    ✓ Approval workflow
+                    ✓ Notification system
+                    ✓ Data persistence
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="legend">
+                        <div class="legend-title">BPMN Elements</div>
+                        
+                        <div class="legend-item">
+                            <div class="legend-icon">●</div>
+                            <span><strong>Circle</strong> - Event (Start/End)</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <div class="legend-icon">▭</div>
+                            <span><strong>Rectangle</strong> - Activity/Task</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <div class="legend-icon">◉</div>
+                            <span><strong>Filled Circle</strong> - Intermediate Event</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <div class="legend-icon">◇</div>
+                            <span><strong>Diamond</strong> - Gateway/Decision</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <div class="legend-icon" style="width: 40px; height: 20px;"></div>
+                            <span><strong>Lane</strong> - Participant/Role</span>
+                        </div>
+
+                        <div class="legend-item">
+                            <span><strong>→</strong> - Sequence Flow</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <div>
+                BPMN 2.0 Diagram | Leave Request Process | © 2024 HR Management System
+            </div>
+            <div>
+                🎯 Status: Process Model | 📊 Lanes: 3 (Employee, Leader, HR) | ⚙️ Activities: 8
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize mxGraph
+        mxGraph.prototype.htmlLabels = true;
+        let graph;
+
+        function initGraph() {
+            const container = document.getElementById('graphContainer');
+            graph = new mxGraph(container);
+            
+            // Enable grid
+            graph.setGridEnabled(true);
+            graph.setGridSize(10);
+            
+            // Set default edge style
+            graph.getStylesheet().getDefaultEdgeStyle()['rounded'] = true;
+            graph.getStylesheet().getDefaultEdgeStyle()['strokeWidth'] = 2;
+            
+            const parent = graph.getDefaultParent();
+
+            // Start transaction
+            graph.getModel().beginUpdate();
+            try {
+                // Define swimlane style
+                const swimlaneStyle = 'swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=40;marginLeft=0;marginRight=0;marginTop=0;marginBottom=0;horizontalStack=1;resizeParent=1;resizeParentMax=0;resizeLast=0;collapsible=0;align=center;minSize=20;';
+
+                // Create swimlanes for each role
+                const employeeLane = graph.insertVertex(parent, null, 'EMPLOYEE', 20, 50, 200, 500, swimlaneStyle + 'fillColor=#E8F4F8;strokeColor=#3498db;');
+                const leaderLane = graph.insertVertex(parent, null, 'TEAM LEADER', 220, 50, 200, 500, swimlaneStyle + 'fillColor=#E8F8F0;strokeColor=#27ae60;');
+                const hrLane = graph.insertVertex(parent, null, 'HR', 420, 50, 200, 500, swimlaneStyle + 'fillColor=#FFF4E6;strokeColor=#e67e22;');
+
+                // Y coordinates for elements
+                let y = 70;
+
+                // START EVENT
+                const start = graph.insertVertex(parent, null, '', y + 20, 80, 40, 40, 'ellipse;fillColor=#27ae60;strokeColor=#27ae60;strokeWidth=2;');
+
+                // EMPLOYEE ACTIONS
+                y += 80;
+                const fillForm = graph.insertVertex(parent, null, 'Fill Leave\nRequest Form', 20, y, 160, 60, 'rounded=1;fillColor=#3498db;strokeColor=#2980b9;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', start, fillForm);
+
+                y += 80;
+                const submitRequest = graph.insertVertex(parent, null, 'Submit\nRequest', 20, y, 160, 60, 'rounded=1;fillColor=#3498db;strokeColor=#2980b9;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', fillForm, submitRequest);
+
+                // LEADER ACTIONS
+                y += 80;
+                const receiveRequest = graph.insertVertex(parent, null, 'Receive Leave\nRequest', 220, y, 160, 60, 'rounded=1;fillColor=#27ae60;strokeColor=#229954;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Notification', submitRequest, receiveRequest);
+
+                y += 80;
+                const reviewRequest = graph.insertVertex(parent, null, 'Review Request\nDetails', 220, y, 160, 60, 'rounded=1;fillColor=#27ae60;strokeColor=#229954;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', receiveRequest, reviewRequest);
+
+                y += 80;
+                const leaderDecision = graph.insertVertex(parent, null, 'Decision:\nApprove?', 220, y, 140, 80, 'rhombus;fillColor=#f39c12;strokeColor=#d68910;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', reviewRequest, leaderDecision);
+
+                // REJECTED PATH
+                const leaderReject = graph.insertVertex(parent, null, 'Reject &\nNotify', 20, y + 120, 160, 60, 'rounded=1;fillColor=#e74c3c;strokeColor=#c0392b;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Rejected', leaderDecision, leaderReject);
+
+                // HR ACTIONS
+                y += 100;
+                const hrReceive = graph.insertVertex(parent, null, 'Receive Approved\nRequest', 420, y, 160, 60, 'rounded=1;fillColor=#e67e22;strokeColor=#d35400;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Approved', leaderDecision, hrReceive);
+
+                y += 80;
+                const checkBalance = graph.insertVertex(parent, null, 'Check Leave\nBalance', 420, y, 160, 60, 'rounded=1;fillColor=#e67e22;strokeColor=#d35400;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', hrReceive, checkBalance);
+
+                y += 80;
+                const hrDecision = graph.insertVertex(parent, null, 'Decision:\nApprove?', 420, y, 140, 80, 'rhombus;fillColor=#9b59b6;strokeColor=#8e44ad;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', checkBalance, hrDecision);
+
+                // HR REJECT PATH
+                const hrReject = graph.insertVertex(parent, null, 'Reject &\nNotify', 20, y + 120, 160, 60, 'rounded=1;fillColor=#e74c3c;strokeColor=#c0392b;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Rejected', hrDecision, hrReject);
+
+                // FINAL APPROVAL PATH
+                y += 100;
+                const updateRecords = graph.insertVertex(parent, null, 'Update\nRecords', 420, y, 160, 60, 'rounded=1;fillColor=#e67e22;strokeColor=#d35400;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Approved', hrDecision, updateRecords);
+
+                y += 80;
+                const notifyApproved = graph.insertVertex(parent, null, 'Notify\nEmployee', 20, y, 160, 60, 'rounded=1;fillColor=#3498db;strokeColor=#2980b9;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, 'Approved', updateRecords, notifyApproved);
+
+                // END EVENTS
+                y += 80;
+                const endApproved = graph.insertVertex(parent, null, '', 50, y, 40, 40, 'ellipse;fillColor=#27ae60;strokeColor=#27ae60;strokeWidth=3;');
+                graph.insertEdge(parent, null, '', notifyApproved, endApproved);
+
+                const endRejected = graph.insertVertex(parent, null, '', 50, y + 80, 40, 40, 'ellipse;fillColor=#e74c3c;strokeColor=#e74c3c;strokeWidth=3;');
+                graph.insertEdge(parent, null, '', leaderReject, endRejected);
+                graph.insertEdge(parent, null, '', hrReject, endRejected);
+
+                // Add connection from rejected paths back to employee
+                const notifyRejected = graph.insertVertex(parent, null, 'Notify\nRejection', 20, y + 40, 160, 60, 'rounded=1;fillColor=#3498db;strokeColor=#2980b9;strokeWidth=2;fontColor=#ffffff;');
+                graph.insertEdge(parent, null, '', leaderReject, notifyRejected);
+                graph.insertEdge(parent, null, '', hrReject, notifyRejected);
+                graph.insertEdge(parent, null, '', notifyRejected, endRejected);
+
+            } finally {
+                graph.getModel().endUpdate();
+            }
+
+            // Fit to window
+            graph.fit();
+        }
+
+        // Initialize on load
+        window.addEventListener('load', initGraph);
+
+        // Download diagram
+        function downloadDiagram() {
+            const xmlData = mxUtils.getXml(graph.getModel().root);
+            const canvas = document.querySelector('canvas');
+            if (canvas) {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png');
+                link.download = 'leave-request-bpmn.png';
+                link.click();
+            }
+        }
+
+        // Print diagram
+        function printDiagram() {
+            window.print();
+        }
+
+        // Zoom controls
+        function zoomIn() {
+            graph.zoomIn();
+        }
+
+        function zoomOut() {
+            graph.zoomOut();
+        }
+
+        function resetZoom() {
+            graph.fit();
+            graph.center(true);
+        }
+    </script>
+</body>
+</html>
