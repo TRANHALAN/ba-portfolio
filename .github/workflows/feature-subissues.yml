@@ -1,0 +1,37 @@
+name: Generate User Stories
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  create-user-stories:
+    if: startsWith(github.event.issue.title, '[FEATURE]')
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+
+            const stories = [
+              "[US] Browse Products",
+              "[US] Search Products",
+              "[US] Filter Products",
+              "[US] Sort Products",
+              "[US] View Product Details"
+            ];
+
+            for (const title of stories) {
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: title,
+                body: `Auto-generated from Feature #${context.issue.number}`
+              });
+
+            }
