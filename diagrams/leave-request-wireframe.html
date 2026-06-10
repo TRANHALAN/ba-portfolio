@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Request Wireframe - Low Fidelity</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 40px 20px;
+        }
+
+        .wireframe-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border: 2px solid #333;
+            padding: 0;
+        }
+
+        .wireframe-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 20px;
+            border-bottom: 2px solid #333;
+            background-color: #e8e8e8;
+        }
+
+        .wireframe-content {
+            padding: 30px;
+        }
+
+        /* HEADER SECTION */
+        .section-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #999;
+        }
+
+        .header-breadcrumb {
+            border: 1px dashed #666;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            background-color: #f9f9f9;
+            font-size: 12px;
+        }
+
+        .header-breadcrumb-label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .header-breadcrumb-item {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        .page-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .page-subtitle {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: 30px;
+            border: 1px solid #999;
+            padding: 20px;
+        }
+
+        .section-label {
+            font-size: 12px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* EMPLOYEE INFO SECTION */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            background-color: #fafafa;
+        }
+
+        .info-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .info-value {
+            font-size: 13px;
+            color: #333;
+            height: 20px;
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .info-value.highlight {
+            background-color: #ffffcc;
+            border: 1px solid #ffcc00;
+            font-weight: bold;
+        }
+
+        /* FORM SECTION */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            font-size: 12px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-label .required {
+            color: #cc0000;
+            margin-left: 3px;
+        }
+
+        .form-input {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 12px;
+            background-color: #ffffff;
+            height: 35px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 12px;
+            background-color: #ffffff;
+            min-height: 100px;
+            resize: vertical;
+            font-family: Arial, sans-serif;
+        }
+
+        .form-select {
+            width: 100%;
+            border: 1px solid #ccc;
+            padding: 10px;
+            font-size: 12px;
+            background-color: #ffffff;
+            height: 35px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fafafa;
+        }
+
+        .checkbox-input {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #666;
+            background-color: #ffffff;
+        }
+
+        .checkbox-label {
+            font-size: 12px;
+            color: #333;
+        }
+
+        /* FILE UPLOAD SECTION */
+        .file-upload-area {
+            border: 2px dashed #999;
+            padding: 30px;
+            text-align: center;
+            background-color: #fafafa;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .file-upload-icon {
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .file-upload-hint {
+            font-size: 11px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-button {
+            border: 1px solid #666;
+            padding: 8px 15px;
+            background-color: #ffffff;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* WORKFLOW SECTION */
+        .workflow-timeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+
+        .timeline-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background-color: #ccc;
+            z-index: -1;
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #666;
+            border-radius: 50%;
+            background-color: #ffffff;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .timeline-dot.current {
+            background-color: #999;
+            color: #ffffff;
+        }
+
+        .timeline-label {
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* ACTION BUTTONS SECTION */
+        .action-area {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            margin-top: 30px;
+        }
+
+        .button {
+            padding: 12px 24px;
+            border: 1px solid #666;
+            background-color: #ffffff;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            flex: 1;
+        }
+
+        .button.primary {
+            background-color: #cccccc;
+            border: 1px solid #333;
+        }
+
+        .button.secondary {
+            background-color: #f0f0f0;
+            border: 1px solid #999;
+        }
+
+        /* NOTES */
+        .wireframe-notes {
+            background-color: #ffffcc;
+            border: 1px solid #ffcc00;
+            padding: 15px;
+            margin-top: 30px;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .wireframe-notes-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .wireframe-notes-item {
+            margin-bottom: 5px;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-timeline {
+                flex-direction: column;
+            }
+
+            .timeline-step:not(:last-child)::after {
+                display: none;
+            }
+
+            .action-area {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="wireframe-container">
+        <div class="wireframe-title">
+            WIREFRAME - CREATE LEAVE REQUEST (Employee View)
+        </div>
+
+        <div class="wireframe-content">
+            <!-- HEADER SECTION -->
+            <div class="section-header">
+                <div class="header-breadcrumb">
+                    <div class="header-breadcrumb-label">Breadcrumb Navigation</div>
+                    <div class="header-breadcrumb-item">Dashboard</div>
+                    <div class="header-breadcrumb-item">&gt;</div>
+                    <div class="header-breadcrumb-item">Create Leave Request</div>
+                </div>
+                <div class="page-title">Create Leave Request</div>
+                <div class="page-subtitle">Submit a new leave request for approval</div>
+            </div>
+
+            <!-- EMPLOYEE INFORMATION SECTION -->
+            <div class="section">
+                <div class="section-label">Section 1: Employee Information</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Employee Name</div>
+                        <div class="info-value">[John Doe]</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Employee ID</div>
+                        <div class="info-value">[EMP-001234]</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Department</div>
+                        <div class="info-value">[Software Development]</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Leave Balance (Annual)</div>
+                        <div class="info-value highlight">[12 Days Available]</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEAVE REQUEST FORM SECTION -->
+            <div class="section">
+                <div class="section-label">Section 2: Leave Request Form</div>
+                
+                <!-- Leave Type -->
+                <div class="form-group">
+                    <label class="form-label">Leave Type <span class="required">*</span></label>
+                    <select class="form-select">
+                        <option>[- Select Leave Type -]</option>
+                        <option>[Annual Leave]</option>
+                        <option>[Sick Leave]</option>
+                        <option>[Unpaid Leave]</option>
+                        <option>[Other]</option>
+                    </select>
+                </div>
+
+                <!-- Date Range -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Start Date <span class="required">*</span></label>
+                        <input type="text" class="form-input" placeholder="[DD/MM/YYYY]">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Date <span class="required">*</span></label>
+                        <input type="text" class="form-input" placeholder="[DD/MM/YYYY]">
+                    </div>
+                </div>
+
+                <!-- Half Day Option -->
+                <div class="form-group">
+                    <label class="form-label">Half Day Option</label>
+                    <div class="form-checkbox">
+                        <div class="checkbox-input"></div>
+                        <div class="checkbox-label">Half Day (End Date)</div>
+                    </div>
+                </div>
+
+                <!-- Total Leave Days -->
+                <div class="form-group">
+                    <label class="form-label">Total Leave Days</label>
+                    <input type="text" class="form-input" placeholder="[Read-only calculated value]" disabled>
+                </div>
+
+                <!-- Reason -->
+                <div class="form-group">
+                    <label class="form-label">Reason for Leave <span class="required">*</span></label>
+                    <textarea class="form-textarea" placeholder="[Enter reason for your leave request...]"></textarea>
+                </div>
+
+                <!-- File Attachment -->
+                <div class="form-group">
+                    <label class="form-label">Attachment (Optional)</label>
+                    <div class="file-upload-area">
+                        <div class="file-upload-icon">[Upload Icon]</div>
+                        <div class="file-upload-text">Drag and drop your file here</div>
+                        <div class="file-upload-hint">or click to browse (PDF, DOC, JPG)</div>
+                        <button class="file-upload-button">Browse Files</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPROVAL WORKFLOW SECTION -->
+            <div class="section">
+                <div class="section-label">Section 3: Approval Workflow</div>
+                <div class="workflow-timeline">
+                    <div class="timeline-step">
+                        <div class="timeline-dot current">1</div>
+                        <div class="timeline-label">Employee<br>(Submit)</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot">2</div>
+                        <div class="timeline-label">Leader<br>(Review)</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot">3</div>
+                        <div class="timeline-label">HR<br>(Review)</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot">4</div>
+                        <div class="timeline-label">Completed<br>(Final)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS SECTION -->
+            <div class="section-label">Section 4: Action Buttons</div>
+            <div class="action-area">
+                <button class="button secondary">Cancel</button>
+                <button class="button secondary">Save Draft</button>
+                <button class="button primary">Submit Request</button>
+            </div>
+
+            <!-- NOTES -->
+            <div class="wireframe-notes">
+                <div class="wireframe-notes-title">WIREFRAME NOTES:</div>
+                <div class="wireframe-notes-item">
+                    • This is a LOW-FIDELITY wireframe - no colors, icons, or gradients used
+                </div>
+                <div class="wireframe-notes-item">
+                    • All component boundaries are shown with borders to clarify structure
+                </div>
+                <div class="wireframe-notes-item">
+                    • Employee Information is pre-populated and read-only (display only)
+                </div>
+                <div class="wireframe-notes-item">
+                    • Leave Balance is highlighted to draw attention
+                </div>
+                <div class="wireframe-notes-item">
+                    • Form fields show input types (text, date, select, checkbox, textarea)
+                </div>
+                <div class="wireframe-notes-item">
+                    • File upload area uses dashed border to indicate drop zone
+                </div>
+                <div class="wireframe-notes-item">
+                    • Approval workflow shows 4-step process with visual timeline
+                </div>
+                <div class="wireframe-notes-item">
+                    • Action buttons are clearly separated at the bottom
+                </div>
+                <div class="wireframe-notes-item">
+                    • Layout is responsive and adapts to smaller screens
+                </div>
+                <div class="wireframe-notes-item">
+                    • Red asterisk (*) indicates required fields
+                </div>
+                <div class="wireframe-notes-item">
+                    • All placeholders use [brackets] to indicate content areas
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
