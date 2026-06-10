@@ -1,0 +1,14 @@
+name: Move Issue To In Progress
+
+on:
+  issues:
+    types: [assigned]
+
+jobs:
+  move:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Log assignment
+        run: |
+          echo "Issue assigned"
