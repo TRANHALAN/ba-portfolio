@@ -1,0 +1,2659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Leave Management System - MVP</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Primary Colors */
+            --primary: #1e40af;
+            --primary-light: #dbeafe;
+            --primary-lighter: #f0f9ff;
+            --primary-dark: #1e3a8a;
+            
+            /* Status Colors */
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            /* Neutral Colors */
+            --text-dark: #1f2937;
+            --text-gray: #6b7280;
+            --text-light: #9ca3af;
+            --bg-white: #ffffff;
+            --bg-light: #f9fafb;
+            --bg-lighter: #f3f4f6;
+            --border-color: #e5e7eb;
+            --border-light: #f3f4f6;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* Spacing */
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            --spacing-2xl: 3rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: var(--bg-lighter);
+            color: var(--text-dark);
+        }
+
+        body {
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-white);
+            border-right: 1px solid var(--border-color);
+            padding: var(--spacing-lg);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .sidebar-brand {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-2xl);
+            text-decoration: none;
+            color: var(--primary);
+        }
+
+        .sidebar-brand-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .sidebar-brand-text {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar-menu-link:hover {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .sidebar-menu-link.active {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+            border-left: 3px solid var(--primary);
+            padding-left: calc(var(--spacing-lg) - 3px);
+        }
+
+        .sidebar-menu-link i {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* HEADER */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 260px;
+            right: 0;
+            height: 70px;
+            background-color: var(--bg-white);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 var(--spacing-xl);
+            z-index: 999;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+        }
+
+        .header-search {
+            width: 280px;
+            position: relative;
+        }
+
+        .header-search input {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 36px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 13px;
+            background-color: var(--bg-light);
+            transition: all 0.3s ease;
+        }
+
+        .header-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: var(--bg-white);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+        }
+
+        .header-search i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-size: 14px;
+        }
+
+        .header-icon-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background-color: var(--bg-light);
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-gray);
+            transition: all 0.3s ease;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .header-icon-btn:hover {
+            background-color: var(--border-light);
+            color: var(--primary);
+        }
+
+        .header-notification-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 20px;
+            height: 20px;
+            background-color: var(--danger);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            color: white;
+            font-weight: 700;
+        }
+
+        .header-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .header-profile:hover {
+            background-color: var(--bg-light);
+        }
+
+        .header-profile-avatar {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .header-profile-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header-profile-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .header-profile-role {
+            font-size: 11px;
+            color: var(--text-light);
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 260px;
+            margin-top: 70px;
+            flex: 1;
+            padding: var(--spacing-2xl);
+            width: calc(100% - 260px);
+            min-height: calc(100vh - 70px);
+            background-color: var(--bg-lighter);
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* BREADCRUMB */
+        .breadcrumb-nav {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            font-size: 13px;
+        }
+
+        .breadcrumb-nav a {
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .breadcrumb-nav a:hover {
+            text-decoration: underline;
+        }
+
+        .breadcrumb-nav span {
+            color: var(--text-gray);
+        }
+
+        .breadcrumb-nav i {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        /* PAGE HEADER */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .page-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .page-subtitle {
+            font-size: 13px;
+            color: var(--text-gray);
+            margin-top: var(--spacing-sm);
+        }
+
+        .page-actions {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        /* BUTTONS */
+        .btn {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--bg-lighter);
+            border-color: var(--primary);
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-sm {
+            padding: var(--spacing-sm) var(--spacing-md);
+            font-size: 12px;
+        }
+
+        .btn-icon {
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+
+        /* DASHBOARD */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .dashboard-card {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-card.welcome {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .dashboard-card.welcome-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .dashboard-card.welcome-subtitle {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .dashboard-card.welcome-action {
+            background-color: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+        }
+
+        .dashboard-card.welcome-action:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .card-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .card-icon.primary {
+            background-color: var(--primary-lighter);
+            color: var(--primary);
+        }
+
+        .card-icon.success {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .card-icon.warning {
+            background-color: #fef3c7;
+            color: var(--warning);
+        }
+
+        .card-icon.danger {
+            background-color: #fee2e2;
+            color: var(--danger);
+        }
+
+        .card-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 600;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card-change {
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .card-change.positive {
+            color: var(--success);
+        }
+
+        .card-change.negative {
+            color: var(--danger);
+        }
+
+        /* SECTION */
+        .section {
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .section-subtitle {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-top: var(--spacing-sm);
+        }
+
+        /* TABLE */
+        .data-table {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table thead {
+            background-color: var(--bg-lighter);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            padding: var(--spacing-lg);
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-gray);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .data-table td {
+            padding: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+            color: var(--text-dark);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: var(--bg-lighter);
+            cursor: pointer;
+        }
+
+        /* STATUS BADGE */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-badge.approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.rejected {
+            background-color: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .status-badge.completed {
+            background-color: #dbeafe;
+            color: #0c2d6b;
+        }
+
+        .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-dot.pending {
+            background-color: var(--warning);
+        }
+
+        .status-dot.approved {
+            background-color: var(--success);
+        }
+
+        .status-dot.rejected {
+            background-color: var(--danger);
+        }
+
+        .status-dot.completed {
+            background-color: var(--info);
+        }
+
+        /* MODAL */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-dialog {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-xl);
+            max-width: 500px;
+            width: 90%;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            padding: var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--text-dark);
+        }
+
+        .modal-body {
+            padding: var(--spacing-xl);
+        }
+
+        .modal-footer {
+            padding: var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: flex-end;
+        }
+
+        /* FORM */
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .form-label.required::after {
+            content: '*';
+            color: var(--danger);
+            margin-left: 2px;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background-color: var(--bg-white);
+            color: var(--text-dark);
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-lighter);
+            background-color: var(--bg-white);
+        }
+
+        .form-input::placeholder {
+            color: var(--text-light);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .form-checkbox {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            cursor: pointer;
+        }
+
+        .form-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .form-checkbox-label {
+            font-size: 14px;
+            color: var(--text-dark);
+            cursor: pointer;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .form-row.full {
+            grid-template-columns: 1fr;
+        }
+
+        .form-error {
+            color: var(--danger);
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-error.show {
+            display: block;
+        }
+
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+            border-color: var(--danger);
+        }
+
+        /* FILE UPLOAD */
+        .file-upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            padding: var(--spacing-2xl);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-lighter);
+        }
+
+        .file-upload-area.active {
+            border-color: var(--primary);
+            background-color: var(--primary-lighter);
+        }
+
+        .file-upload-icon {
+            font-size: 32px;
+            color: var(--primary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .file-upload-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 4px;
+        }
+
+        .file-upload-hint {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-list {
+            margin-top: var(--spacing-md);
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-md);
+            background-color: var(--bg-lighter);
+            border-radius: 8px;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .file-item-info {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            flex: 1;
+        }
+
+        .file-item-icon {
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-lighter);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+        }
+
+        .file-item-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .file-item-size {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .file-item-remove {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .file-item-remove:hover {
+            transform: scale(1.2);
+        }
+
+        /* TIMELINE */
+        .approval-timeline {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-2xl);
+        }
+
+        .timeline-step {
+            flex: 1;
+            position: relative;
+        }
+
+        .timeline-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 30px;
+            right: -var(--spacing-lg);
+            width: calc(100% + var(--spacing-lg) * 2);
+            height: 2px;
+            background-color: var(--border-color);
+            z-index: -1;
+        }
+
+        .timeline-step.completed:not(:last-child)::after {
+            background-color: var(--success);
+        }
+
+        .timeline-step.active:not(:last-child)::after {
+            background: linear-gradient(to right, var(--success) 50%, var(--border-color) 50%);
+        }
+
+        .timeline-dot {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--bg-lighter);
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: var(--spacing-md);
+            transition: all 0.3s ease;
+        }
+
+        .timeline-step.completed .timeline-dot {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .timeline-step.active .timeline-dot {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: white;
+            box-shadow: 0 0 0 8px var(--primary-lighter);
+        }
+
+        .timeline-step.rejected .timeline-dot {
+            background-color: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .timeline-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 4px;
+        }
+
+        /* APPROVAL CARD */
+        .approval-card {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .approval-card-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+
+        .approval-card-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .approval-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .approval-info-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .approval-info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* DETAIL SECTION */
+        .detail-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .detail-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        /* COMMENT SECTION */
+        .comment-section {
+            background-color: var(--bg-white);
+            border-radius: 12px;
+            padding: var(--spacing-xl);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .comment-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comment-item {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .comment-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .comment-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex: 1;
+        }
+
+        .comment-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .comment-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .comment-time {
+            font-size: 12px;
+            color: var(--text-light);
+        }
+
+        .comment-role {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: var(--text-gray);
+            line-height: 1.6;
+        }
+
+        /* FILTER BAR */
+        .filter-bar {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+
+        .filter-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-white);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tag:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-lighter);
+        }
+
+        .filter-tag.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ACTION MENU */
+        .action-menu {
+            position: relative;
+            display: inline-block;
+        }
+
+        .action-menu-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: var(--text-gray);
+            cursor: pointer;
+            padding: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .action-menu-btn:hover {
+            color: var(--primary);
+        }
+
+        .action-menu-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background-color: var(--bg-white);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: var(--shadow-md);
+            min-width: 150px;
+            display: none;
+            z-index: 100;
+            margin-top: var(--spacing-sm);
+        }
+
+        .action-menu-dropdown.active {
+            display: block;
+        }
+
+        .action-menu-item {
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .action-menu-item:last-child {
+            border-bottom: none;
+        }
+
+        .action-menu-item:hover {
+            background-color: var(--bg-lighter);
+            color: var(--primary);
+        }
+
+        .action-menu-item.danger {
+            color: var(--danger);
+        }
+
+        .action-menu-item.danger:hover {
+            background-color: #fee2e2;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                padding: var(--spacing-md);
+            }
+
+            .sidebar-brand-text,
+            .sidebar-menu-link span {
+                display: none;
+            }
+
+            .sidebar-menu-link {
+                justify-content: center;
+                padding: var(--spacing-md);
+            }
+
+            .header {
+                left: 70px;
+                padding: 0 var(--spacing-md);
+            }
+
+            .header-search {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 70px;
+                width: calc(100% - 70px);
+                padding: var(--spacing-lg);
+            }
+
+            .approval-timeline {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+
+            .timeline-step:not(:last-child)::after {
+                display: none;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .page-actions {
+                width: 100%;
+                margin-top: var(--spacing-md);
+            }
+
+            .page-actions .btn {
+                flex: 1;
+                justify-content: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .approval-timeline {
+                flex-direction: column;
+            }
+
+            .modal-dialog {
+                width: 95%;
+            }
+
+            .table-wrapper {
+                overflow-x: auto;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: var(--spacing-md);
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .section-title {
+                font-size: 14px;
+            }
+        }
+
+        /* UTILITY */
+        .hidden {
+            display: none !important;
+        }
+
+        .mt-lg {
+            margin-top: var(--spacing-xl);
+        }
+
+        .mb-lg {
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .gap-lg {
+            gap: var(--spacing-lg);
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-muted {
+            color: var(--text-light);
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <a href="#" class="sidebar-brand" onclick="goToDashboard()">
+            <div class="sidebar-brand-icon">
+                <i class="fas fa-calendar-check"></i>
+            </div>
+            <span class="sidebar-brand-text">HR Leave</span>
+        </a>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <button class="sidebar-menu-link active" onclick="navigateTo('dashboard')">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </button>
+            </li>
+            <li class="sidebar-menu-item">
+                <button class="sidebar-menu-link" onclick="navigateTo('createRequest')">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Create Request</span>
+                </button>
+            </li>
+            <li class="sidebar-menu-item">
+                <button class="sidebar-menu-link" onclick="navigateTo('myRequests')">
+                    <i class="fas fa-list"></i>
+                    <span>My Requests</span>
+                </button>
+            </li>
+            <li class="sidebar-menu-item">
+                <button class="sidebar-menu-link" onclick="navigateTo('pendingApproval')">
+                    <i class="fas fa-inbox"></i>
+                    <span>Pending Approval</span>
+                </button>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-title">HR Leave Management</div>
+        <div class="flex items-center gap-lg">
+            <div class="header-search">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search leaves, employees...">
+            </div>
+            <button class="header-icon-btn">
+                <i class="fas fa-bell"></i>
+                <div class="header-notification-badge">3</div>
+            </button>
+            <div class="header-profile">
+                <div class="header-profile-avatar">JD</div>
+                <div class="header-profile-info">
+                    <div class="header-profile-name">John Doe</div>
+                    <div class="header-profile-role">Employee</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <!-- DASHBOARD SCREEN -->
+        <div class="screen active" id="dashboard">
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Dashboard</div>
+                    <div class="page-subtitle">Welcome back to the leave management system</div>
+                </div>
+            </div>
+
+            <!-- WELCOME CARD -->
+            <div class="dashboard-grid">
+                <div class="dashboard-card welcome">
+                    <div class="dashboard-card.welcome-title">Welcome, John Doe! 👋</div>
+                    <div class="dashboard-card.welcome-subtitle">You have 12 days of annual leave remaining this year.</div>
+                    <button class="btn btn-primary dashboard-card.welcome-action" onclick="navigateTo('createRequest')">
+                        <i class="fas fa-plus"></i> Create Leave Request
+                    </button>
+                </div>
+
+                <!-- STATS CARDS -->
+                <div class="dashboard-card">
+                    <div class="card-icon primary">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="card-label">Annual Leave Remaining</div>
+                    <div class="card-value">12</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i> 2 days from last month
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon warning">
+                        <i class="fas fa-hourglass-half"></i>
+                    </div>
+                    <div class="card-label">Pending Approval</div>
+                    <div class="card-value">2</div>
+                    <div class="card-change">
+                        <i class="fas fa-info-circle"></i> Awaiting review
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="card-label">Approved Leaves</div>
+                    <div class="card-value">8</div>
+                    <div class="card-change positive">
+                        <i class="fas fa-arrow-up"></i> 3 this year
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-icon danger">
+                        <i class="fas fa-times-circle"></i>
+                    </div>
+                    <div class="card-label">Rejected Leaves</div>
+                    <div class="card-value">1</div>
+                    <div class="card-change">
+                        <i class="fas fa-calendar"></i> No recent rejections
+                    </div>
+                </div>
+            </div>
+
+            <!-- RECENT REQUESTS -->
+            <div class="section">
+                <div class="section-header">
+                    <div>
+                        <div class="section-title">Recent Leave Requests</div>
+                        <div class="section-subtitle">Your latest leave request submissions</div>
+                    </div>
+                    <a href="#" onclick="navigateTo('myRequests')" style="color: var(--primary); text-decoration: none; font-size: 13px; font-weight: 600;">View All</a>
+                </div>
+
+                <div class="data-table">
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Request ID</th>
+                                    <th>Leave Type</th>
+                                    <th>Date Range</th>
+                                    <th>Days</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr onclick="goToDetail('REQ-001')">
+                                    <td><strong>REQ-001</strong></td>
+                                    <td>Annual Leave</td>
+                                    <td>Dec 20 - Dec 27, 2024</td>
+                                    <td>8</td>
+                                    <td><span class="status-badge pending"><span class="status-dot pending"></span> Pending</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-primary" onclick="goToDetail('REQ-001'); event.stopPropagation();">View</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="goToDetail('REQ-002')">
+                                    <td><strong>REQ-002</strong></td>
+                                    <td>Sick Leave</td>
+                                    <td>Dec 15 - Dec 15, 2024</td>
+                                    <td>1</td>
+                                    <td><span class="status-badge approved"><span class="status-dot approved"></span> Approved</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" onclick="goToDetail('REQ-002'); event.stopPropagation();">View</button>
+                                    </td>
+                                </tr>
+                                <tr onclick="goToDetail('REQ-003')">
+                                    <td><strong>REQ-003</strong></td>
+                                    <td>Annual Leave</td>
+                                    <td>Dec 5 - Dec 10, 2024</td>
+                                    <td>6</td>
+                                    <td><span class="status-badge rejected"><span class="status-dot rejected"></span> Rejected</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-secondary" onclick="goToDetail('REQ-003'); event.stopPropagation();">View</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CREATE REQUEST SCREEN -->
+        <div class="screen" id="createRequest">
+            <div class="breadcrumb-nav">
+                <a onclick="goToDashboard()">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Create Leave Request</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Create Leave Request</div>
+                    <div class="page-subtitle">Submit a new leave request for approval</div>
+                </div>
+            </div>
+
+            <div class="detail-section">
+                <form id="leaveForm" onsubmit="submitLeaveForm(event)">
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label class="form-label required">Leave Type</label>
+                            <select class="form-select" id="leaveType" required>
+                                <option value="">Select leave type</option>
+                                <option value="Annual Leave">Annual Leave</option>
+                                <option value="Sick Leave">Sick Leave</option>
+                                <option value="Unpaid Leave">Unpaid Leave</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label required">Start Date</label>
+                            <input type="date" class="form-input" id="startDate" required onchange="calculateDays()">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required">End Date</label>
+                            <input type="date" class="form-input" id="endDate" required onchange="calculateDays()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-checkbox">
+                            <input type="checkbox" id="halfDay" onchange="calculateDays()">
+                            <span class="form-checkbox-label">Half Day (End Date)</span>
+                        </label>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label class="form-label">Total Days</label>
+                            <input type="text" class="form-input" id="totalDays" value="0" readonly style="background-color: var(--bg-lighter);">
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label class="form-label required">Reason</label>
+                            <textarea class="form-textarea" id="reason" placeholder="Please provide a reason for your leave request..." required></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-row full">
+                        <div class="form-group">
+                            <label class="form-label">Attachment</label>
+                            <div class="file-upload-area" id="fileUploadArea">
+                                <div class="file-upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="file-upload-text">Drag and drop your file here</div>
+                                <div class="file-upload-hint">or click to browse (PDF, DOC, JPG)</div>
+                                <input type="file" id="fileInput" class="file-input" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                            </div>
+                            <div class="file-list" id="fileList"></div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-lg" style="margin-top: var(--spacing-xl);">
+                        <button type="button" class="btn btn-secondary" onclick="goToDashboard()">Cancel</button>
+                        <button type="button" class="btn btn-secondary" onclick="saveDraft()">Save Draft</button>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MY REQUESTS SCREEN -->
+        <div class="screen" id="myRequests">
+            <div class="breadcrumb-nav">
+                <a onclick="goToDashboard()">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>My Leave Requests</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">My Leave Requests</div>
+                    <div class="page-subtitle">View and manage all your leave requests</div>
+                </div>
+                <button class="btn btn-primary" onclick="navigateTo('createRequest')">
+                    <i class="fas fa-plus"></i> New Request
+                </button>
+            </div>
+
+            <div class="filter-bar" id="filterBar">
+                <div class="filter-tag active" onclick="filterRequests(this, 'all')">All</div>
+                <div class="filter-tag" onclick="filterRequests(this, 'pending')">Pending</div>
+                <div class="filter-tag" onclick="filterRequests(this, 'approved')">Approved</div>
+                <div class="filter-tag" onclick="filterRequests(this, 'rejected')">Rejected</div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-wrapper">
+                    <table id="requestsTable">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Leave Type</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <tr onclick="goToDetail('REQ-001')">
+                                <td><strong>REQ-001</strong></td>
+                                <td>Annual Leave</td>
+                                <td>Dec 20, 2024</td>
+                                <td>Dec 27, 2024</td>
+                                <td>8</td>
+                                <td><span class="status-badge pending"><span class="status-dot pending"></span> Pending</span></td>
+                                <td>Nov 28, 2024</td>
+                                <td>
+                                    <div class="action-menu">
+                                        <button class="action-menu-btn" onclick="toggleActionMenu(event)">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="action-menu-dropdown">
+                                            <button class="action-menu-item" onclick="goToDetail('REQ-001'); event.stopPropagation();">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                            <button class="action-menu-item" onclick="editRequest('REQ-001'); event.stopPropagation();">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </button>
+                                            <button class="action-menu-item danger" onclick="deleteRequest('REQ-001'); event.stopPropagation();">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="goToDetail('REQ-002')">
+                                <td><strong>REQ-002</strong></td>
+                                <td>Sick Leave</td>
+                                <td>Dec 15, 2024</td>
+                                <td>Dec 15, 2024</td>
+                                <td>1</td>
+                                <td><span class="status-badge approved"><span class="status-dot approved"></span> Approved</span></td>
+                                <td>Nov 20, 2024</td>
+                                <td>
+                                    <div class="action-menu">
+                                        <button class="action-menu-btn" onclick="toggleActionMenu(event)">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="action-menu-dropdown">
+                                            <button class="action-menu-item" onclick="goToDetail('REQ-002'); event.stopPropagation();">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="goToDetail('REQ-003')">
+                                <td><strong>REQ-003</strong></td>
+                                <td>Annual Leave</td>
+                                <td>Dec 5, 2024</td>
+                                <td>Dec 10, 2024</td>
+                                <td>6</td>
+                                <td><span class="status-badge rejected"><span class="status-dot rejected"></span> Rejected</span></td>
+                                <td>Nov 15, 2024</td>
+                                <td>
+                                    <div class="action-menu">
+                                        <button class="action-menu-btn" onclick="toggleActionMenu(event)">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="action-menu-dropdown">
+                                            <button class="action-menu-item" onclick="goToDetail('REQ-003'); event.stopPropagation();">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr onclick="goToDetail('REQ-004')">
+                                <td><strong>REQ-004</strong></td>
+                                <td>Unpaid Leave</td>
+                                <td>Jan 10, 2025</td>
+                                <td>Jan 12, 2025</td>
+                                <td>3</td>
+                                <td><span class="status-badge approved"><span class="status-dot approved"></span> Approved</span></td>
+                                <td>Nov 10, 2024</td>
+                                <td>
+                                    <div class="action-menu">
+                                        <button class="action-menu-btn" onclick="toggleActionMenu(event)">
+                                            <i class="fas fa-ellipsis-v"></i>
+                                        </button>
+                                        <div class="action-menu-dropdown">
+                                            <button class="action-menu-item" onclick="goToDetail('REQ-004'); event.stopPropagation();">
+                                                <i class="fas fa-eye"></i> View
+                                            </button>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- DETAIL REQUEST SCREEN -->
+        <div class="screen" id="detailRequest">
+            <div class="breadcrumb-nav">
+                <a onclick="goToDashboard()">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <a onclick="navigateTo('myRequests')">My Requests</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="detailRequestId">REQ-001</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title" id="detailPageTitle">Leave Request Details</div>
+                    <div class="page-subtitle">Review your leave request and its approval status</div>
+                </div>
+                <div id="detailStatusBadge"></div>
+            </div>
+
+            <!-- APPROVAL TIMELINE -->
+            <div class="section mb-lg">
+                <div class="section-title" style="margin-bottom: var(--spacing-lg);">Approval Timeline</div>
+                <div class="approval-timeline" id="approvalTimeline">
+                    <div class="timeline-step completed">
+                        <div class="timeline-dot">
+                            <i class="fas fa-check"></i>
+                        </div>
+                        <div class="timeline-label">Submitted</div>
+                        <div class="timeline-date">Nov 28, 2024</div>
+                    </div>
+                    <div class="timeline-step active">
+                        <div class="timeline-dot">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="timeline-label">Leader Review</div>
+                        <div class="timeline-date">Pending...</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="timeline-label">HR Review</div>
+                        <div class="timeline-date">-</div>
+                    </div>
+                    <div class="timeline-step">
+                        <div class="timeline-dot">
+                            <i class="fas fa-check-double"></i>
+                        </div>
+                        <div class="timeline-label">Completed</div>
+                        <div class="timeline-date">-</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EMPLOYEE INFO -->
+            <div class="detail-section">
+                <div class="detail-section-title">Employee Information</div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Full Name</div>
+                        <div class="detail-value">John Doe</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Employee ID</div>
+                        <div class="detail-value">EMP-001234</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Department</div>
+                        <div class="detail-value">Software Development</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Manager</div>
+                        <div class="detail-value">Sarah Johnson</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEAVE INFO -->
+            <div class="detail-section">
+                <div class="detail-section-title">Leave Information</div>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="detail-label">Leave Type</div>
+                        <div class="detail-value">Annual Leave</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Total Days</div>
+                        <div class="detail-value">8</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Start Date</div>
+                        <div class="detail-value">Dec 20, 2024</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">End Date</div>
+                        <div class="detail-value">Dec 27, 2024</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Remaining Balance</div>
+                        <div class="detail-value">12 days</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">After This Leave</div>
+                        <div class="detail-value">4 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REASON -->
+            <div class="detail-section">
+                <div class="detail-section-title">Reason</div>
+                <div style="color: var(--text-gray); line-height: 1.6;">
+                    I would like to take this leave to spend time with my family during the holiday season. This is planned time off and I have ensured all my ongoing projects are properly handed off to the team.
+                </div>
+            </div>
+
+            <!-- COMMENTS SECTION -->
+            <div class="comment-section">
+                <div class="comment-section-title">
+                    <i class="fas fa-comments"></i> Approvals & Comments
+                </div>
+                
+                <div class="comment-item">
+                    <div class="comment-avatar">SJ</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <div>
+                                <div class="comment-name">Sarah Johnson</div>
+                                <div class="comment-role">Team Leader - Pending Review</div>
+                            </div>
+                            <div class="comment-time">2 hours ago</div>
+                        </div>
+                        <div class="comment-text">
+                            Reviewing your request. Will provide feedback shortly.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="comment-item">
+                    <div class="comment-avatar">JD</div>
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <div>
+                                <div class="comment-name">John Doe</div>
+                                <div class="comment-role">Employee - Submitted</div>
+                            </div>
+                            <div class="comment-time">Nov 28, 2024</div>
+                        </div>
+                        <div class="comment-text">
+                            I have submitted my leave request for the holiday period. Looking forward to hearing back.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: var(--spacing-xl);">
+                <button class="btn btn-secondary" onclick="navigateTo('myRequests')">
+                    <i class="fas fa-arrow-left"></i> Back to Requests
+                </button>
+            </div>
+        </div>
+
+        <!-- PENDING APPROVAL SCREEN -->
+        <div class="screen" id="pendingApproval">
+            <div class="breadcrumb-nav">
+                <a onclick="goToDashboard()">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Pending Approvals</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Pending Leave Approvals</div>
+                    <div class="page-subtitle">Review and approve pending leave requests from your team</div>
+                </div>
+            </div>
+
+            <div class="data-table">
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Employee</th>
+                                <th>Leave Type</th>
+                                <th>Date Range</th>
+                                <th>Days</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr onclick="goToApproval('REQ-001')">
+                                <td><strong>REQ-001</strong></td>
+                                <td>John Doe</td>
+                                <td>Annual Leave</td>
+                                <td>Dec 20 - Dec 27, 2024</td>
+                                <td>8</td>
+                                <td><span class="status-badge pending"><span class="status-dot pending"></span> Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="goToApproval('REQ-001'); event.stopPropagation();">Review</button>
+                                </td>
+                            </tr>
+                            <tr onclick="goToApproval('REQ-005')">
+                                <td><strong>REQ-005</strong></td>
+                                <td>Jane Smith</td>
+                                <td>Sick Leave</td>
+                                <td>Dec 18 - Dec 19, 2024</td>
+                                <td>2</td>
+                                <td><span class="status-badge pending"><span class="status-dot pending"></span> Pending</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary" onclick="goToApproval('REQ-005'); event.stopPropagation();">Review</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPROVAL REVIEW SCREEN -->
+        <div class="screen" id="approvalReview">
+            <div class="breadcrumb-nav">
+                <a onclick="goToDashboard()">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <a onclick="navigateTo('pendingApproval')">Pending Approvals</a>
+                <i class="fas fa-chevron-right"></i>
+                <span id="approvalRequestId">REQ-001</span>
+            </div>
+
+            <div class="page-header">
+                <div>
+                    <div class="page-title">Approve Leave Request</div>
+                    <div class="page-subtitle">Review and decide on the following leave request</div>
+                </div>
+            </div>
+
+            <!-- EMPLOYEE INFO CARD -->
+            <div class="approval-card">
+                <div class="approval-card-title">
+                    <i class="fas fa-user-circle"></i> Employee Information
+                </div>
+                <div class="approval-card-content">
+                    <div class="approval-info">
+                        <div class="approval-info-label">Name</div>
+                        <div class="approval-info-value">John Doe</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Department</div>
+                        <div class="approval-info-value">Software Development</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Employee ID</div>
+                        <div class="approval-info-value">EMP-001234</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Manager</div>
+                        <div class="approval-info-value">You (Sarah Johnson)</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LEAVE DETAILS CARD -->
+            <div class="approval-card">
+                <div class="approval-card-title">
+                    <i class="fas fa-calendar-alt"></i> Leave Details
+                </div>
+                <div class="approval-card-content">
+                    <div class="approval-info">
+                        <div class="approval-info-label">Leave Type</div>
+                        <div class="approval-info-value">Annual Leave</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Total Days</div>
+                        <div class="approval-info-value">8 days</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Date Range</div>
+                        <div class="approval-info-value">Dec 20 - Dec 27, 2024</div>
+                    </div>
+                    <div class="approval-info">
+                        <div class="approval-info-label">Current Balance</div>
+                        <div class="approval-info-value">12 days</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- REASON CARD -->
+            <div class="approval-card">
+                <div class="approval-card-title">
+                    <i class="fas fa-file-alt"></i> Reason for Leave
+                </div>
+                <div style="color: var(--text-gray); line-height: 1.6;">
+                    I would like to take this leave to spend time with my family during the holiday season. This is planned time off and I have ensured all my ongoing projects are properly handed off to the team.
+                </div>
+            </div>
+
+            <!-- APPROVAL COMMENT -->
+            <div class="detail-section">
+                <div class="detail-section-title">Your Comment</div>
+                <textarea class="form-textarea" id="approvalComment" placeholder="Add your approval comment (optional)..."></textarea>
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="flex gap-lg" style="margin-top: var(--spacing-xl); margin-bottom: var(--spacing-xl);">
+                <button class="btn btn-secondary" onclick="navigateTo('pendingApproval')">Cancel</button>
+                <button class="btn btn-danger" onclick="rejectRequest()">
+                    <i class="fas fa-times"></i> Reject Request
+                </button>
+                <button class="btn btn-success" onclick="approveRequest()">
+                    <i class="fas fa-check"></i> Approve Request
+                </button>
+            </div>
+        </div>
+
+        <!-- CONFIRMATION MODAL -->
+        <div class="modal-overlay" id="confirmationModal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">Confirm Leave Request Submission</div>
+                    <button class="modal-close" onclick="closeModal('confirmationModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div style="margin-bottom: var(--spacing-lg);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-lg);">
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Leave Type</div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-dark);" id="modalLeaveType">Annual Leave</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Total Days</div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-dark);" id="modalTotalDays">8</div>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Date Range</div>
+                                <div style="font-size: 14px; font-weight: 600; color: var(--text-dark);" id="modalDateRange">Dec 20 - Dec 27, 2024</div>
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Reason</div>
+                                <div style="font-size: 13px; color: var(--text-gray); line-height: 1.6;" id="modalReason">Reason for leave</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="background-color: var(--primary-lighter); border-left: 4px solid var(--primary); padding: var(--spacing-md); border-radius: 4px;">
+                        <div style="font-size: 13px; color: var(--primary); font-weight: 500;">
+                            <i class="fas fa-info-circle"></i> Please review the details above before confirming your leave request.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('confirmationModal')">Cancel</button>
+                    <button class="btn btn-primary" onclick="confirmSubmit()">Confirm & Submit</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- APPROVAL CONFIRMATION MODAL -->
+        <div class="modal-overlay" id="approvalConfirmModal">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <div class="modal-title">Confirm Approval Decision</div>
+                    <button class="modal-close" onclick="closeModal('approvalConfirmModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="approvalConfirmContent"></div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeModal('approvalConfirmModal')">Cancel</button>
+                    <button class="btn btn-primary" id="approvalConfirmBtn" onclick="confirmApprovalDecision()">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // SAMPLE DATA
+        const leaveRequests = [
+            {
+                id: 'REQ-001',
+                employeeId: 'EMP-001234',
+                employeeName: 'John Doe',
+                department: 'Software Development',
+                manager: 'Sarah Johnson',
+                leaveType: 'Annual Leave',
+                startDate: '2024-12-20',
+                endDate: '2024-12-27',
+                totalDays: 8,
+                reason: 'I would like to take this leave to spend time with my family during the holiday season.',
+                status: 'pending',
+                submittedDate: '2024-11-28',
+                remainingBalance: 12,
+                halfDay: false
+            },
+            {
+                id: 'REQ-002',
+                employeeId: 'EMP-001234',
+                employeeName: 'John Doe',
+                department: 'Software Development',
+                manager: 'Sarah Johnson',
+                leaveType: 'Sick Leave',
+                startDate: '2024-12-15',
+                endDate: '2024-12-15',
+                totalDays: 1,
+                reason: 'Medical appointment',
+                status: 'approved',
+                submittedDate: '2024-11-20',
+                remainingBalance: 10,
+                halfDay: false
+            },
+            {
+                id: 'REQ-003',
+                employeeId: 'EMP-001234',
+                employeeName: 'John Doe',
+                department: 'Software Development',
+                manager: 'Sarah Johnson',
+                leaveType: 'Annual Leave',
+                startDate: '2024-12-05',
+                endDate: '2024-12-10',
+                totalDays: 6,
+                reason: 'Personal time',
+                status: 'rejected',
+                submittedDate: '2024-11-15',
+                remainingBalance: 14,
+                halfDay: false
+            }
+        ];
+
+        // STATE
+        let currentRequest = null;
+        let approvalAction = null;
+
+        // NAVIGATION
+        function navigateTo(screenId) {
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => screen.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            const menuItems = document.querySelectorAll('.sidebar-menu-link');
+            menuItems.forEach(item => item.classList.remove('active'));
+            document.querySelector(`button[onclick="navigateTo('${screenId}')"]`)?.classList.add('active');
+        }
+
+        function goToDashboard() {
+            navigateTo('dashboard');
+            document.querySelector(`button[onclick="navigateTo('dashboard')"]`)?.classList.add('active');
+        }
+
+        function goToDetail(requestId) {
+            currentRequest = leaveRequests.find(r => r.id === requestId);
+            document.getElementById('detailRequestId').textContent = requestId;
+            document.getElementById('detailPageTitle').textContent = `Leave Request - ${requestId}`;
+            document.getElementById('detailStatusBadge').innerHTML = getStatusBadge(currentRequest.status);
+            navigateTo('detailRequest');
+        }
+
+        function goToApproval(requestId) {
+            currentRequest = leaveRequests.find(r => r.id === requestId);
+            document.getElementById('approvalRequestId').textContent = requestId;
+            navigateTo('approvalReview');
+        }
+
+        // FORM HANDLING
+        function calculateDays() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const halfDay = document.getElementById('halfDay').checked;
+
+            if (startDate && endDate) {
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                let days = 0;
+
+                for (let date = new Date(start); date <= end; date.setDate(date.getDate() + 1)) {
+                    const dayOfWeek = date.getDay();
+                    if (dayOfWeek !== 0 && dayOfWeek !== 6) { // Exclude weekends
+                        days++;
+                    }
+                }
+
+                if (halfDay) {
+                    days -= 0.5;
+                }
+
+                document.getElementById('totalDays').value = days.toFixed(1);
+            }
+        }
+
+        function submitLeaveForm(event) {
+            event.preventDefault();
+
+            const leaveType = document.getElementById('leaveType').value;
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const totalDays = document.getElementById('totalDays').value;
+            const reason = document.getElementById('reason').value;
+
+            document.getElementById('modalLeaveType').textContent = leaveType;
+            document.getElementById('modalTotalDays').textContent = totalDays;
+            document.getElementById('modalDateRange').textContent = formatDateRange(startDate, endDate);
+            document.getElementById('modalReason').textContent = reason;
+
+            document.getElementById('confirmationModal').classList.add('active');
+        }
+
+        function confirmSubmit() {
+            closeModal('confirmationModal');
+            showNotification('Leave request submitted successfully!', 'success');
+            setTimeout(() => {
+                goToDashboard();
+            }, 1500);
+        }
+
+        function saveDraft() {
+            showNotification('Draft saved successfully!', 'success');
+        }
+
+        function formatDateRange(start, end) {
+            const startDate = new Date(start).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const endDate = new Date(end).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            return `${startDate} - ${endDate}`;
+        }
+
+        // APPROVAL HANDLING
+        function approveRequest() {
+            approvalAction = 'approve';
+            const comment = document.getElementById('approvalComment').value;
+            
+            let content = `
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="background-color: #d1fae5; border-left: 4px solid var(--success); padding: var(--spacing-md); border-radius: 4px; margin-bottom: var(--spacing-lg);">
+                        <div style="font-size: 13px; color: var(--success); font-weight: 600;">
+                            <i class="fas fa-check-circle"></i> You are about to approve this leave request
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: var(--spacing-md);">
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Employee</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark);">John Doe</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Request Details</div>
+                            <div style="font-size: 14px; color: var(--text-dark);">Annual Leave | Dec 20 - Dec 27 | 8 days</div>
+                        </div>
+                        ${comment ? `
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Your Comment</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">${comment}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('approvalConfirmContent').innerHTML = content;
+            document.getElementById('approvalConfirmBtn').textContent = 'Confirm Approval';
+            document.getElementById('approvalConfirmBtn').className = 'btn btn-success';
+            document.getElementById('approvalConfirmModal').classList.add('active');
+        }
+
+        function rejectRequest() {
+            approvalAction = 'reject';
+            const comment = document.getElementById('approvalComment').value;
+            
+            let content = `
+                <div style="margin-bottom: var(--spacing-lg);">
+                    <div style="background-color: #fee2e2; border-left: 4px solid var(--danger); padding: var(--spacing-md); border-radius: 4px; margin-bottom: var(--spacing-lg);">
+                        <div style="font-size: 13px; color: var(--danger); font-weight: 600;">
+                            <i class="fas fa-exclamation-circle"></i> You are about to reject this leave request
+                        </div>
+                    </div>
+                    <div style="display: grid; gap: var(--spacing-md);">
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Employee</div>
+                            <div style="font-size: 14px; font-weight: 600; color: var(--text-dark);">John Doe</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Request Details</div>
+                            <div style="font-size: 14px; color: var(--text-dark);">Annual Leave | Dec 20 - Dec 27 | 8 days</div>
+                        </div>
+                        ${comment ? `
+                            <div>
+                                <div style="font-size: 12px; color: var(--text-light); text-transform: uppercase; margin-bottom: 4px; font-weight: 600;">Your Comment</div>
+                                <div style="font-size: 13px; color: var(--text-gray);">${comment}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('approvalConfirmContent').innerHTML = content;
+            document.getElementById('approvalConfirmBtn').textContent = 'Confirm Rejection';
+            document.getElementById('approvalConfirmBtn').className = 'btn btn-danger';
+            document.getElementById('approvalConfirmModal').classList.add('active');
+        }
+
+        function confirmApprovalDecision() {
+            closeModal('approvalConfirmModal');
+            if (approvalAction === 'approve') {
+                showNotification('Leave request approved successfully!', 'success');
+            } else {
+                showNotification('Leave request rejected successfully!', 'success');
+            }
+            setTimeout(() => {
+                navigateTo('pendingApproval');
+            }, 1500);
+        }
+
+        // FILTERING
+        function filterRequests(elem, status) {
+            document.querySelectorAll('#filterBar .filter-tag').forEach(tag => {
+                tag.classList.remove('active');
+            });
+            elem.classList.add('active');
+
+            // Filter table rows
+            const rows = document.querySelectorAll('#requestsTableBody tr');
+            rows.forEach(row => {
+                if (status === 'all') {
+                    row.style.display = '';
+                } else {
+                    const statusBadge = row.querySelector('.status-badge');
+                    if (statusBadge.textContent.toLowerCase().includes(status)) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // MODAL HANDLING
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // ACTION MENU
+        function toggleActionMenu(event) {
+            event.stopPropagation();
+            const menu = event.target.closest('.action-menu');
+            const dropdown = menu.querySelector('.action-menu-dropdown');
+            
+            document.querySelectorAll('.action-menu-dropdown').forEach(dd => {
+                if (dd !== dropdown) {
+                    dd.classList.remove('active');
+                }
+            });
+            
+            dropdown.classList.toggle('active');
+        }
+
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.action-menu-dropdown').forEach(dd => {
+                dd.classList.remove('active');
+            });
+        });
+
+        // FILE UPLOAD
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileInput = document.getElementById('fileInput');
+
+        if (fileUploadArea) {
+            fileUploadArea.addEventListener('click', () => fileInput.click());
+            fileUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.add('active');
+            });
+            fileUploadArea.addEventListener('dragleave', () => {
+                fileUploadArea.classList.remove('active');
+            });
+            fileUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                fileUploadArea.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+            fileInput.addEventListener('change', (e) => {
+                handleFiles(e.target.files);
+            });
+        }
+
+        function handleFiles(files) {
+            const fileList = document.getElementById('fileList');
+            for (let file of files) {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-item-info">
+                        <div class="file-item-icon">
+                            <i class="fas fa-file"></i>
+                        </div>
+                        <div>
+                            <div class="file-item-name">${file.name}</div>
+                            <div class="file-item-size">${(file.size / 1024).toFixed(2)} KB</div>
+                        </div>
+                    </div>
+                    <button type="button" class="file-item-remove" onclick="this.parentElement.remove()">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                `;
+                fileList.appendChild(fileItem);
+            }
+        }
+
+        // UTILITY FUNCTIONS
+        function getStatusBadge(status) {
+            const badges = {
+                'pending': '<span class="status-badge pending"><span class="status-dot pending"></span> Pending</span>',
+                'approved': '<span class="status-badge approved"><span class="status-dot approved"></span> Approved</span>',
+                'rejected': '<span class="status-badge rejected"><span class="status-dot rejected"></span> Rejected</span>',
+                'completed': '<span class="status-badge completed"><span class="status-dot completed"></span> Completed</span>'
+            };
+            return badges[status] || '';
+        }
+
+        function editRequest(requestId) {
+            showNotification('Edit functionality coming soon!', 'info');
+        }
+
+        function deleteRequest(requestId) {
+            if (confirm('Are you sure you want to delete this request?')) {
+                showNotification('Request deleted successfully!', 'success');
+            }
+        }
+
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: var(--spacing-lg);
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 600;
+                z-index: 3000;
+                animation: slideIn 0.3s ease;
+                box-shadow: var(--shadow-lg);
+                max-width: 400px;
+            `;
+
+            const colors = {
+                'success': { bg: '#d1fae5', text: '#065f46', icon: '✓' },
+                'danger': { bg: '#fee2e2', text: '#7f1d1d', icon: '✕' },
+                'warning': { bg: '#fef3c7', text: '#92400e', icon: '!' },
+                'info': { bg: '#dbeafe', text: '#0c2d6b', icon: 'i' }
+            };
+
+            const color = colors[type] || colors.success;
+            notification.style.backgroundColor = color.bg;
+            notification.style.color = color.text;
+            notification.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Add animation styles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
