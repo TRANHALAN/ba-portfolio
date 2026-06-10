@@ -1,0 +1,35 @@
+name: Validate User Story
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const body = issue.body || "";
+
+            const hasAsA = body.includes("As a");
+            const hasIWant = body.includes("I want");
+            const hasSoThat = body.includes("So that");
+
+            if (
+              issue.title.startsWith("[US]") &&
+              (!hasAsA || !hasIWant || !hasSoThat)
+            ) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: "⚠️ User Story format is invalid. Please include: As a / I want / So that."
+              });
+            }
